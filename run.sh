@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 run_tsc='nope'
 
 for f in `(cd "$project_root/src" && find . -type f)`; do
