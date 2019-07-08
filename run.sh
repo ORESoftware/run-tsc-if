@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 run_tsc='nope'
+project_root="${project_root:-$1}"
 
 for f in `(cd "$project_root/src" && find . -type f)`; do
 
