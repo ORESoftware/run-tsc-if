@@ -3,6 +3,8 @@
 run_tsc='nope'
 project_root="${project_root:-$1}"
 
+PATH="$project_root/node_modules/.bin:${PATH}"
+
 for f in `(cd "$project_root/src" && find . -type f)`; do
 
     f="${f:2}" # remove first 2 chars
