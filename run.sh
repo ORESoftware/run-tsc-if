@@ -36,6 +36,10 @@ for f in `(cd "$project_root/src" && find . -type f)`; do
 done
 
 if [[ "$run_tsc" == 'yes' ]]; then
+
+  echo "PATH => $PATH";
+
   echo 'Running transpile with tsc, because we have un-transpiled files.';
+
   (cd "$project_root" && tsc)
 fi
