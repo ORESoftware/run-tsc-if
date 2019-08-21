@@ -63,6 +63,10 @@ if [[ "$run_tsc" == 'yes' ]]; then
 
   echo 'Running transpile with tsc, because we have un-transpiled files, or package.json changed.';
 
-  (cd "$project_root" && npm i && tsc)
+  (cd "$project_root" && npm i && tsc && {
+    new_sha="$(sha1sum package.json)"
+    echo "$new_sha" > "node_modules/.sha/run-tsc-if/package.json.sha"
+  })
+
 
 fi
