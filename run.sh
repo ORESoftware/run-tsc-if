@@ -52,7 +52,6 @@ check_sha(){
 
 if [[ "$run_tsc" != 'yes' ]]; then
    if ! check_sha; then
-      echo 'RUNNNING'
       run_tsc='yes'
    fi
 fi
