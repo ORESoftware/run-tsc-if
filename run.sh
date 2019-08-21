@@ -44,7 +44,6 @@ check_sha(){
     old_sha=$(cat "node_modules/.sha/run-tsc-if/package.json.sha");
     echo "$new_sha" > "node_modules/.sha/run-tsc-if/package.json.sha"
     if [[ "$new_sha" != "$old_sha" ]]; then
-       echo 'yes'
        exit 1;
     fi
     exit 0;
