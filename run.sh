@@ -8,7 +8,7 @@ export PATH="$project_root/node_modules/.bin:${PATH}"
 
 for f in `(cd "$project_root/$root_dir" && find . -type f)`; do
 
-    f="${f:2}" # remove first 2 chars
+    f="${f:2}" # remove first 2 chars  (remove './' at the beginning)
     length="${#f}"
     end_index=$(expr "$length" - '3')
     jsf="${f:0:$end_index}.js"
