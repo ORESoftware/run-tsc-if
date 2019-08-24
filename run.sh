@@ -66,5 +66,4 @@ if [[ "$run_tsc" == 'yes' ]]; then
     echo "$new_sha" > "node_modules/.sha/run-tsc-if/package.json.sha"
   })
 
-
 fi
