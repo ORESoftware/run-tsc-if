@@ -40,8 +40,19 @@ check_sha(){
   (
     cd "$project_root"
     mkdir -p "node_modules/.sha/run-tsc-if"
-    new_sha="$(sha1sum package.json)"
-    old_sha=$(cat "node_modules/.sha/run-tsc-if/package.json.sha");
+
+    if [[ -f 'package.json' ]]; then
+       new_sha="$(sha1sum 'package.json')"
+    else
+       new_sha='(no package.json file)';
+    fi
+
+    if [[ -f "node_modules/.sha/run-tsc-if/package.json.sha" ]]; then
+      old_sha="$(cat 'node_modules/.sha/run-tsc-if/package.json.sha')";
+    else
+      old_sha='(no package.json.sha file)';
+    fi
+
     echo "$new_sha" > "node_modules/.sha/run-tsc-if/package.json.sha"
     if [[ "$new_sha" != "$old_sha" ]]; then
        exit 1;
