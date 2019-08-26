@@ -2,6 +2,7 @@
 
 run_tsc='nope'
 project_root="${project_root:-$1}"
+project_root="${project_root:-"$(pwd)"}"
 root_dir="${root_dir:-src}"
 dist_dir="${dist_dir:-dist}"
 export PATH="$project_root/node_modules/.bin:${PATH}"
