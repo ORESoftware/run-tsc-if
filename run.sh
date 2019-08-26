@@ -2,9 +2,9 @@
 
 run_tsc='nope'
 project_root="${project_root:-$1}"
-project_root="${project_root:-"$(pwd)"}"
+project_root="${project_root:-"$PWD"}"
 root_dir="${root_dir:-src}"
-dist_dir="${dist_dir:-dist}"
+out_dir="${out_dir:-dist}"
 export PATH="$project_root/node_modules/.bin:${PATH}"
 
 for f in `(cd "$project_root/$root_dir" && find . -type f)`; do
@@ -15,7 +15,7 @@ for f in `(cd "$project_root/$root_dir" && find . -type f)`; do
     jsf="${f:0:$end_index}.js"
 
     full_src="$project_root/$root_dir/$f";
-    full_dist="$project_root/$dist_dir/$jsf";
+    full_dist="$project_root/$out_dir/$jsf";
 
     if [[ "$full_src" != *'.ts' ]]; then
       continue;
