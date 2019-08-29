@@ -75,6 +75,7 @@ if [[ "$run_tsc" == 'yes' ]]; then
 
   (cd "$project_root" && npm i && tsc && {
     new_sha="$(sha1sum package.json)"
+    mkdir -p "node_modules/.sha/run-tsc-if"
     echo "$new_sha" > "node_modules/.sha/run-tsc-if/package.json.sha"
   })
 
