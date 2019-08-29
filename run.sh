@@ -81,7 +81,7 @@ if [[ "$run_tsc" == 'yes'  || "$package_json_change" == 'yes' ]]; then
   echo 'Running transpile with tsc, because we have un-transpiled files, or package.json changed.';
 
   (cd "$project_root" && run_npm_i && tsc && {
-    set +e;
+    set +e;  # sha1sum may not be available in users env
     new_sha="$(sha1sum package.json)"
     mkdir -p "node_modules/.sha/run-tsc-if"
     echo "$new_sha" > "node_modules/.sha/run-tsc-if/package.json.sha"

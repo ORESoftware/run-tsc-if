@@ -3,14 +3,40 @@
 exports.run = (opts) => {
   
   const projectRoot = opts.projectRoot;
-  const rootDir = opts.rootDir || 'src';
-  const outDir = opts.outDir || 'dist';
+  
+  if (!projectRoot) {
+    throw 'Need to pass project root to run-tsc-if.';
+  }
+  
+  let rootDir = opts.rootDir;
+  let outDir = opts.outDir;
+  let tsconfig = null;
+  
+  if (!rootDir || !outDir) {
+    try {
+      tsconfig = require(path.resolve(projectRoot + '/tsconfig.json'));
+    }
+    catch (err) {
+      tsconfig = {
+        compilerOptions: {
+          rootDir: 'src',
+          outDir: 'dist'
+        }
+      }
+    }
+  }
+  
+  if (!outDir) {
+    outDir = tsconfig.compilerOptions.outDir || 'dist'
+  }
+  
+  if (!rootDir) {
+    rootDir = tsconfig.compilerOptions.rootDir || 'src'
+  }
   
   return String(`
   
       set -e;
-      export root_dir='${rootDir}'
-      export out_dir='${outDir}'
       
       (
           if [[  -f "$HOME/.oresoftware/bin/run-tsc-if"  ]]; then
@@ -26,6 +52,8 @@ exports.run = (opts) => {
       
       )
       
+      export root_dir='${rootDir}'
+      export out_dir='${outDir}'
       "$HOME/.oresoftware/bin/run-tsc-if" '${projectRoot}'
       
     `);
