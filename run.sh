@@ -18,11 +18,11 @@ for f in `(cd "$project_root/$root_dir" && find . -type f)`; do
     full_dist="$project_root/$out_dir/$jsf";
 
     if [[ "$full_src" != *'.ts' ]]; then
-      continue;
+       continue;
     fi
 
      if [[ "$full_src" == *'.d.ts' ]]; then
-      continue;
+       continue;
      fi
 
     if [[ ! -f "$full_dist" ]]; then
@@ -39,13 +39,21 @@ done
 
 check_sha(){
   (
+
     cd "$project_root"
     mkdir -p "node_modules/.sha/run-tsc-if"
 
     if [[ -f 'package.json' ]]; then
-       new_sha="$(sha1sum 'package.json')"
-    else
-       new_sha='(no package.json file)';
+      if command -v sha1sum &> /dev/null; then
+         new_sha="$(sha1sum 'package.json')"
+      elif command -v md5sum &> /dev/null; then
+         new_sha="$(md5sum 'package.json')"
+      fi
+    fi
+
+
+    if [[ -z "$new_sha" ]]; then
+       new_sha='(no package.json file, or no sha1sum/md5sum programs available.)';
     fi
 
     if [[ -f "node_modules/.sha/run-tsc-if/package.json.sha" ]]; then
@@ -86,9 +94,9 @@ if [[ "$run_tsc" == 'yes'  || "$package_json_change" == 'yes' ]]; then
      new_sha="no sha1sum or md5sum programs available"
 
      if command -v sha1sum &> /dev/null; then
-      new_sha="$(sha1sum package.json)"
+      new_sha="$(sha1sum 'package.json')"
      elif command -v md5sum &> /dev/null; then
-      new_sha="$(md5sum package.json)"
+      new_sha="$(md5sum 'package.json')"
      fi
 
      mkdir -p "node_modules/.sha/run-tsc-if"
