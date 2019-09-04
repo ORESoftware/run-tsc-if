@@ -1,0 +1,25 @@
+{
+  "name": "run-tsc-if",
+  "version": "0.0.101",
+  "description": "run tsc if condition is met",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo 'noop'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ORESoftware/run-tsc-if.git"
+  },
+  "keywords": [
+    "run",
+    "tsc",
+    "if",
+    "typescript"
+  ],
+  "author": "Olegzandr Von Denman",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ORESoftware/run-tsc-if/issues"
+  },
+  "homepage": "https://github.com/ORESoftware/run-tsc-if#readme"
+}

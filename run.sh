@@ -63,9 +63,11 @@ check_sha(){
     fi
 
     echo "$new_sha" > "node_modules/.sha/run-tsc-if/package.json.sha"
+
     if [[ "$new_sha" != "$old_sha" ]]; then
        exit 1;
     fi
+
     exit 0;
   )
 }
