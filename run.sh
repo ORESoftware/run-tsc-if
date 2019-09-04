@@ -81,10 +81,18 @@ if [[ "$run_tsc" == 'yes'  || "$package_json_change" == 'yes' ]]; then
   echo 'Running transpile with tsc, because we have un-transpiled files, or package.json changed.';
 
   (cd "$project_root" && run_npm_i && tsc && {
-    set +e;  # sha1sum may not be available in users env
-    new_sha="$(sha1sum package.json)"
-    mkdir -p "node_modules/.sha/run-tsc-if"
-    echo "$new_sha" > "node_modules/.sha/run-tsc-if/package.json.sha"
+     set +e;  # sha1sum may not be available in users env
+
+     new_sha="no sha1sum or md5sum programs available"
+
+     if command -v sha1sum &> /dev/null; then
+      new_sha="$(sha1sum package.json)"
+     elif command -v md5sum &> /dev/null; then
+      new_sha="$(md5sum package.json)"
+     fi
+
+     mkdir -p "node_modules/.sha/run-tsc-if"
+     echo "$new_sha" > "node_modules/.sha/run-tsc-if/package.json.sha"
   })
 
 fi
