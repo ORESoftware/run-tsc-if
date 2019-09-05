@@ -7,7 +7,11 @@ root_dir="${root_dir:-src}"
 out_dir="${out_dir:-dist}"
 export PATH="$project_root/node_modules/.bin:${PATH}"
 
-for f in `(cd "$project_root/$root_dir" && find . -type f)`; do
+find_files(){
+  (cd "$project_root/$root_dir" && find . -type f)
+}
+
+for f in `find_files`; do
 
     f="${f:2}" # remove first 2 chars  (remove './' at the beginning)
     length="${#f}"

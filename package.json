@@ -2,7 +2,9 @@
   "name": "run-tsc-if",
   "version": "0.0.102",
   "description": "run tsc if condition is met",
-  "main": "main.js",
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
+  "typings": "dist/main.d.ts",
   "scripts": {
     "test": "echo 'noop'"
   },
