@@ -12,7 +12,7 @@ class Exec<T> {
     this.r = r;
   }
   
-  exec(started: number, err: any, val: any): void {
+  exec(started: number, err?: any, val?: any): void {
     
     this.r.incrementedEnded();
     this.r.results[started] = val;
@@ -41,11 +41,11 @@ class Run<T> {
   limit: number;
   total: number;
   
-  constructor(items: Iterable<T>, limit: number, h: Handler<T>, cb: EVCb<any>) {
+  constructor(items: Array<T>, limit: number, h: Handler<T>, cb: EVCb<any>) {
     
     this.finalcb = cb;
     this.limit = limit;
-    this.list = Array.from(items);
+    this.list = items;
     this.total = this.list.length;
     this.results = new Array(this.list.length);
     this.executor = new Exec<T>(this);
@@ -73,27 +73,27 @@ class Run<T> {
     return this.ended;
   }
   
+  getCurrent() {
+    return this.started - this.ended;
+  }
+  
   run(): void {
     
-    if(this.list.length < 1){
+    if (this.list.length < 1) {
       return;
     }
     
-    const item = this.list.pop();
-    
-    this.count++;
+    const item = this.list.shift();
     const started = this.getStarted();
-  
+    
     this.incrementedStarted();
+    this.handler(
+      item,
+      this.executor.exec.bind(this.executor, started)
+    );
     
-    this.handler(item, (err, val) => {
-      this.executor.exec(started, err, val);
-    });
-    
-    if (this.count < this.limit) {
-      if (this.list.length > 0) {
-        this.run();
-      }
+    if (this.getCurrent() < this.limit) {
+      this.run();
     }
   }
   
@@ -101,6 +101,15 @@ class Run<T> {
 
 
 export default <T>(items: Iterable<T>, limit: number, handler: Handler<T>, cb: EVCb<any>) => {
-  new Run(items, limit, handler, cb).run()
+  
+  const v = Array.from(items);
+  
+  if (v.length < 1) {
+    cb(null, []);
+    return;
+  }
+  
+  new Run(v, limit, handler, cb).run()
+  
 };
 

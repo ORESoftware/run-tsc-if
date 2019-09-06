@@ -5,7 +5,8 @@ import  runGetShellCmd from './get-shell-cmd-str';
 import rl from './run-limit';
 import * as fs from "fs";
 
-export type EVCb<T, E = any> = (err: E, val?: T) => void;
+export type EVCb<T, E = any> = (err?: E, val?: T) => void;
+
 
 export interface RunOpts {
   projectRoot: string,
