@@ -4,27 +4,27 @@ import {EVCb} from "./main";
 
 export type Handler<T> = (val: T, cb: EVCb<any>) => void;
 
-class Exec <T>{
+class Exec<T> {
   
   r: Run<T>;
   
-  constructor(r: Run<T>){
+  constructor(r: Run<T>) {
     this.r = r;
   }
   
-  run(err: any, val: any): void {
-  
-    this.r.incrementedEnded();
-    this.r.results.push(val);
+  exec(started: number, err: any, val: any): void {
     
-    if(err || this.r.getEnded() === this.r.list.length){
+    this.r.incrementedEnded();
+    this.r.results[started] = val;
+    
+    if (err || this.r.getEnded() === this.r.total) {
       return this.r.fireFinalCallback(err);
     }
     
     this.r.run();
     
   }
-
+  
 }
 
 
@@ -39,52 +39,62 @@ class Run<T> {
   finalcb: EVCb<any>;
   executor: Exec<T>;
   limit: number;
+  total: number;
   
   constructor(items: Iterable<T>, limit: number, h: Handler<T>, cb: EVCb<any>) {
     
     this.finalcb = cb;
     this.limit = limit;
     this.list = Array.from(items);
+    this.total = this.list.length;
     this.results = new Array(this.list.length);
     this.executor = new Exec<T>(this);
+    this.handler = h;
     
   }
   
-  fireFinalCallback(err: any){
+  fireFinalCallback(err: any) {
     this.finalcb(err, this.results);
   }
   
-  incrementedStarted(){
+  getStarted() {
+    return this.started;
+  }
+  
+  incrementedStarted() {
     this.started++;
   }
   
-  incrementedEnded(){
+  incrementedEnded() {
     this.ended++;
   }
   
-  getEnded(){
+  getEnded() {
     return this.ended;
   }
   
   run(): void {
-  
-    const item = this.list.pop();
     
-    if(!item){
+    if(this.list.length < 1){
       return;
     }
     
+    const item = this.list.pop();
+    
     this.count++;
+    const started = this.getStarted();
+  
     this.incrementedStarted();
     
-    this.handler(item, (err,val) => {
-      this.executor.run(err,val);
+    this.handler(item, (err, val) => {
+      this.executor.exec(started, err, val);
     });
     
-    if(this.count < this.limit){
-      this.run();
+    if (this.count < this.limit) {
+      if (this.list.length > 0) {
+        this.run();
+      }
     }
-  
   }
   
 }
