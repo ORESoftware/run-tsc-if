@@ -3,7 +3,7 @@
     "outDir": "dist",
     "allowJs": false,
     "pretty": true,
-    "strict": true,
+    "strict": false,
     "resolveJsonModule": true,
     "sourceMap": false,
     "skipLibCheck": true,

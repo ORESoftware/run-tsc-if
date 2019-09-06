@@ -1,3 +1,4 @@
+export declare type EVCb<T, E = any> = (err: E, val?: T) => void;
 export interface RunOpts {
     projectRoot: string;
     rootDir?: string;
