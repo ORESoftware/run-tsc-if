@@ -1,19 +1,15 @@
+import * as  rl from '../run-limit';
 
-import rl from '../run-limit';
 
-
-rl([1,2,3], 2, (v, cb) => {
+rl.mapLimit(2,[1, 2, 3], (v, cb) => {
+  
+  console.log(v);
   
   setTimeout(() => {
-  
-    console.log(v);
-    cb(null, v*2);
-    
+    cb(null, v * 2);
   }, 800);
   
   
 }, (err, results) => {
-  
-  console.log({err,results});
-
+  console.log({err, results});
 });

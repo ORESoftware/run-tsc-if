@@ -2,27 +2,43 @@
 
 import {EVCb} from "./main";
 
-export type Handler<T> = (val: T, cb: EVCb<any>) => void;
+export type Handler<T> = (val: T, v: EVCb<any>) => void;
 
 class Exec<T> {
   
+  isDone = false;
+  started = -1;
   r: Run<T>;
   
-  constructor(r: Run<T>) {
+  constructor(r: Run<T>, started: number) {
     this.r = r;
+    this.started = started;
   }
   
-  exec(started: number, err?: any, val?: any): void {
+  done(err?: any, val?: any) {
+    
+    if (this.isDone) {
+      return;
+    }
+    
+    this.isDone = true;
     
     this.r.incrementedEnded();
-    this.r.results[started] = val;
+    
+    if (this.r.shortCircuit) {
+      return;
+    }
+    
+    this.r.results[this.started] = val;
     
     if (err || this.r.getEnded() === this.r.total) {
+      this.r.shortCircuit = true;
       return this.r.fireFinalCallback(err);
     }
     
-    this.r.run();
-    
+    if (this.r.list.length > 0) {
+      this.r.run();
+    }
   }
   
 }
@@ -31,30 +47,42 @@ class Exec<T> {
 class Run<T> {
   
   results: Array<any>;
-  list: Array<T>;
+  list: Array<[string, T]>;
   started = 0;
   ended = 0;
   count = 0;
   handler: Handler<T>;
   finalcb: EVCb<any>;
-  executor: Exec<T>;
   limit: number;
   total: number;
+  shortCircuit = false;
+  allDone = false;
   
-  constructor(items: Array<T>, limit: number, h: Handler<T>, cb: EVCb<any>) {
+  constructor(items: Array<[string, T]>, limit: number, h: Handler<T>, cb: EVCb<any>) {
     
     this.finalcb = cb;
     this.limit = limit;
     this.list = items;
     this.total = this.list.length;
     this.results = new Array(this.list.length);
-    this.executor = new Exec<T>(this);
     this.handler = h;
     
   }
   
   fireFinalCallback(err: any) {
+    
+    if (this.allDone) {
+      return;
+    }
+    
+    this.allDone = true;
+    
+    if (typeof this.finalcb !== 'function') {
+      return;
+    }
+    
     this.finalcb(err, this.results);
+    
   }
   
   getStarted() {
@@ -73,9 +101,10 @@ class Run<T> {
     return this.ended;
   }
   
-  getCurrent() {
+  getCurrentCount() {
     return this.started - this.ended;
   }
+  
   
   run(): void {
     
@@ -87,12 +116,19 @@ class Run<T> {
     const started = this.getStarted();
     
     this.incrementedStarted();
+    
+    const ex = new Exec(this, started);
+    
     this.handler(
       item,
-      this.executor.exec.bind(this.executor, started)
+      ex.done.bind(ex)
     );
     
-    if (this.getCurrent() < this.limit) {
+    if (this.list.length < 1) {
+      return;
+    }
+    
+    if (this.getCurrentCount() < this.limit) {
       this.run();
     }
   }
@@ -100,7 +136,7 @@ class Run<T> {
 }
 
 
-export default <T>(items: Iterable<T>, limit: number, handler: Handler<T>, cb: EVCb<any>) => {
+export const mapLimit = <T>(limit: number, items: Iterable<T>, handler: Handler<T>, cb: EVCb<any>) => {
   
   const v = Array.from(items);
   
@@ -112,4 +148,33 @@ export default <T>(items: Iterable<T>, limit: number, handler: Handler<T>, cb: E
   new Run(v, limit, handler, cb).run()
   
 };
+
+
+export const map = <T>(items: Iterable<T>, handler: Handler<T>, cb: EVCb<any>) => {
+  
+  const v = Array.from(items);
+  
+  if (v.length < 1) {
+    cb(null, []);
+    return;
+  }
+  
+  new Run(v, Number.MAX_SAFE_INTEGER, handler, cb).run()
+  
+};
+
+
+export const mapSeries = <T>(items: Iterable<T>, handler: Handler<T>, cb: EVCb<any>) => {
+  
+  const v = Array.from(items);
+  
+  if (v.length < 1) {
+    cb(null, []);
+    return;
+  }
+  
+  new Run(v, 1, handler, cb).run()
+  
+};
+
 

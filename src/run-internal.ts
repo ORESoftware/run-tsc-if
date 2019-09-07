@@ -1,7 +1,7 @@
 'use strict';
 
 import * as fs from "fs";
-import rl from "./run-limit";
+import * as rl from "./run-limit";
 import * as path from "path";
 import {EVCb} from "./main";
 import {RunOpts} from "./main";
@@ -15,30 +15,23 @@ export default (opts: RunOpts) => {
     
     fs.readdir(d, (err, items) => {
       
-      if(err){
+      if (err) {
         return cb(null);
       }
       
-      rl(items, 5, (v, cb) => {
+      rl.mapLimit(5, items, (v, cb) => {
         
         const full = path.resolve(d, v);
         
         fs.stat(full, (err, stats) => {
           
-          if(err){
+          if (err) {
             return cb(null);
           }
           
-          
-          if(stats.isDirectory()){
+          if (stats.isDirectory()) {
             return searchDir(full, cb);
           }
-          
-          
-          
-          
-          
-          
           
         });
         
