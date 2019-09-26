@@ -22,7 +22,6 @@ class Exec<T> {
     }
     
     this.isDone = true;
-    
     this.r.incrementedEnded();
     
     if (this.r.shortCircuit) {
@@ -33,7 +32,7 @@ class Exec<T> {
     
     if (err || this.r.getEnded() === this.r.total) {
       this.r.shortCircuit = true;
-      return this.r.fireFinalCallback(err);
+      return this.r.fireFinalCallback(err || null);
     }
     
     if (this.r.list.length > 0) {
@@ -47,7 +46,7 @@ class Exec<T> {
 class Run<T> {
   
   results: Array<any>;
-  list: Array<[string, T]>;
+  list: Array<T>;
   started = 0;
   ended = 0;
   count = 0;
@@ -58,7 +57,7 @@ class Run<T> {
   shortCircuit = false;
   allDone = false;
   
-  constructor(items: Array<[string, T]>, limit: number, h: Handler<T>, cb: EVCb<any>) {
+  constructor(items: Array<T>, limit: number, h: Handler<T>, cb: EVCb<any>) {
     
     this.finalcb = cb;
     this.limit = limit;
