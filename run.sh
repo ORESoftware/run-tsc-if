@@ -81,6 +81,8 @@ export package_json_change='nope'
 if ! check_sha; then
   package_json_change='yes'
   run_tsc='yes'
+  echo 'package.json changed, running npm install...'
+  npm i && echo 'npm install .. has completed.' ||  echo 'npm install did not do too good...';
 fi
 
 run_npm_i(){
