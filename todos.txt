@@ -1,4 +1,0 @@
-
-:: TODOs
-
-if skipLibCheck is on - then we shouldn't run tsc just because package.json has changed
